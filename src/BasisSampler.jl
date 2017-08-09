@@ -3,9 +3,10 @@
 
 module BasisSampler
 
-export BasisSampler, sample, value, absnorm, norm
+import Base.norm
+export Sampler, sample, value, absnorm, norm
 
-struct BasisSampler{T}
+struct Sampler{T}
   f::SparseVector{T,Int}      # Store original function projection
   cdf::Vector{T}              # Compressed cumulative density function 
   prm::Vector{Int}            # Permutation vector
@@ -13,12 +14,15 @@ struct BasisSampler{T}
 end
 
 """
-    BasisSampler(f::SparseVector)
+    Sampler(f::AbstractVector)
 
-Construct a `BasisSampler` from a sparse vector `f` where row `i` of vector `f` is the value
+Construct a `Sampler` from a sparse vector `f` where row `i` of vector `f` is the value
 of `ith` node in some arbitrary basis.
 """
-function BasisSampler(f::SparseVector{T,Int}) where T
+Sampler(f::AbstractVector{T}) where {T} = Sampler(sparsevec(f))
+
+
+function Sampler(f::SparseVector{T,Int}) where {T}
 
   # Distributions dont care about polarity
   fa = abs.(f)
@@ -31,17 +35,18 @@ function BasisSampler(f::SparseVector{T,Int}) where T
   fn = sum(nzsort)
   nzcdf = cumsum(nzsort) ./ fn
 
-  BasisSampler(f, nzcdf, nzperm, fn)
+  Sampler(f, nzcdf, nzperm, fn)
 
 end
 
+
 """
-    sample(f::BasisSampler) -> i, w
+    sample(f::Sampler) -> i, w
 
 Draw an unbiased index `i` of a node from a function descritised in an arbitrary basis, and
 weighting to restore the polarity of the function.
 """
-function sample(f::BasisSampler{N,T}) where {N,T}
+function sample(f::Sampler{T}) where {T}
 
   ζ = rand()
   i = 0
@@ -58,20 +63,20 @@ function sample(f::BasisSampler{N,T}) where {N,T}
 end
 
 """
-    value(f::BasisSampler, i)
+    value(f::Sampler, i)
 
 Return the projected nodal value of node `i`.
 """
-value(f::BasisSampler, i) = f.f[i]
+value(f::Sampler, i) = f.f[i]
 
 """
-    absnorm(f::BasisSampler)
+    absnorm(f::Sampler)
 
 Return the integral of the absolute value of the function, which can be used to rescale a
 sampled function to its original magnitude.
 """
-absnorm(f::BasisSampler) = f.absnorm
-norm(f::BasisSampler) = absnorm(f)
+absnorm(f::Sampler) = f.absnorm
+norm(f::Sampler) = absnorm(f)
 
 end # module
 
