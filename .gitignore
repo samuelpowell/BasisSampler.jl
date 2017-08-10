@@ -1,3 +1,6 @@
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
+deps/config.jl
+src/CUDA/*.ptx
+deps/*.ptx

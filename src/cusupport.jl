@@ -2,7 +2,7 @@
 # Copyright (C) 2017 Samuel Powell
 
 # cudasupport.jl: CUDA compatible types and methods
-export CuSampler, CuSamplerPTX, CuSamplerStruct, custruct
+export CuSampler, CuSamplerStruct, custruct, cuptx, cuinc
 
 struct CuSamplerStruct
   fn::Cuint
@@ -41,5 +41,6 @@ function CuSampler(s::Sampler)
 end
 
 custruct(s::CuSampler) = s.d_struct
+cuptx() = ptxfn
+cuinc() = joinpath(dirname(@__FILE__), "CUDA")
 
-CuSamplerPTX() = ptxfn

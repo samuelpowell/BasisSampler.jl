@@ -61,7 +61,7 @@ void sample(sampler_t s, float zeta, unsigned int *k, float *w)
   }
 
   // Convert to zero based element index
-  *k--;
+  (*k)--;
 
   return;
 }
@@ -75,6 +75,7 @@ void sample_test(sampler_t s, int ns, float *zeta, unsigned int *k, float *w)
   for(int sid = id; sid < ns; sid += gr)
   {
     sample(s, zeta[sid], k+sid, w+sid);
+    k[sid]++; // Return one-based indices to Julia
   }
   
   return;

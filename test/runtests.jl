@@ -17,15 +17,19 @@ const vectors = [[gausvec]; [randvec]; [endvec]; [strvec]; [servec]]
     s = Sampler(v)
     l = length(v)
     r = zeros(l)
+    j = 0
 
     @inbounds for i in 1:nsamples
-      e, w = sample(s)
-      r[e] += w
+      j, w = sample(s)
+      r[j] += w
     end
 
     r .*= absnorm(s)/nsamples
 
     @test (norm( r - v )./l) < 1e-4
+
+    @test norm(s) == absnorm(s)
+    @test value(s, j) == v[j]
   
   end
 
@@ -49,7 +53,7 @@ if cudatest
 
   # Prepare the GPU
   ctx = CuContext(CuDevice(0))
-  ptxmod = CuModuleFile(CuSamplerPTX())
+  ptxmod = CuModuleFile(cuptx())
   kernel = CuFunction(ptxmod, "sample_test")
 
   gpurvec = [rand(100)*2-1; zeros(10); 1.];
