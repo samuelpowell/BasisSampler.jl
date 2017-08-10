@@ -13,7 +13,7 @@
 #define DPRINT(args...)
 #endif
 
-__inline__ __device__
+__device__ __noinline__
 void sample(sampler_t s, float zeta, unsigned int *k, float *w)
 {
   const int id = blockIdx.x * blockDim.x + threadIdx.x;

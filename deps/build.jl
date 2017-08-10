@@ -13,7 +13,7 @@ cudabuild = false
 
 try
   using CUDAdrv
-  run(`$nvccbin --use_fast_math -ptx -lineinfo -src-in-ptx $nvccsrc`)
+  run(`$nvccbin --use_fast_math -ptx -dc -lineinfo -src-in-ptx $nvccsrc`)
   info("BasisSampler.jl CUDA backend built, PTX module available.")
   cudabuild = true
 catch
