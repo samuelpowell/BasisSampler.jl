@@ -67,7 +67,7 @@ application. The PTX module is compiled automatically during the package build p
 CUDAdrv.jl is installed, and `nvcc` is available on the path.
 
 To call the kernel function, include `src/CUDA/sampler.h` in your project, link against
-`deps/sampler.ptx` using the CUDA driver JIT features, and pass the appropriate structures
+`src/CUDA/sampler.ptx` using the CUDA driver JIT features, and pass the appropriate structures
 to your CUDA application.
 
 To upoad the neccedary data to the GPU:
