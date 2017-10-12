@@ -54,11 +54,24 @@ sample(f::Sampler{T}) where {T} = sample(f, rand())
 
 function sample(f::Sampler{T}, ζ::Number) where {T}
 
-  i = 0
-  while i < length(f.prm)
-    i += 1
-    @inbounds f.cdf[i] < ζ ? continue : break
+  # Perform modified binary search, note right bracket does not decrement
+  # and indexing is zero-based.
+  L = 0
+  R = length(f.prm)-1
+
+  while L < R
+    
+    m = div(L+R, 2)
+
+    if f.cdf[m+1] <= ζ
+      L = m + 1;
+    else
+      R = m;
+    end
+
   end
+
+  i = div(L+R, 2) + 1
 
   @inbounds s = f.prm[i]
   @inbounds w = f.pol[i] > 0 ? one(T) : -one(T)
