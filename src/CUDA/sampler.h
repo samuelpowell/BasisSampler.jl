@@ -5,9 +5,8 @@
 
 struct sampler {
   const unsigned int fn;        // Sparse function length
-  unsigned int * const fnzind;  // Sparse nonzero indices
-  float * const fnzval;         // Sparse nonzero values
   float * const cdf;            // Cumulative densitiy function
+  unsigned char * const pol;    // Compressed polarity vector
   unsigned int * const prm;     // Permutation vector
 };
 typedef struct sampler sampler_t;

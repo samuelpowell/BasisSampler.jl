@@ -7,7 +7,7 @@
 
 #include "sampler.h"
 
-#ifdef DEBUG
+#ifdef BS_DEBUG
 #define DPRINT(args...) if(id==0) { printf("Thread %i: ", id); printf(args); printf("\n"); }
 #else
 #define DPRINT(args...)
@@ -16,15 +16,12 @@
 __device__ __noinline__
 void sample(sampler_t s, float zeta, unsigned int *k, float *w)
 {
+  #ifdef BS_DEBUG
   const int id = blockIdx.x * blockDim.x + threadIdx.x;
+  #endif
 
   int i = 0;
-
-  // for(i = 0; i < s.fn; i++)
-  // {
-  //   s.cdf[i] < zeta ? continue : break;
-  // }
-
+    
   while(s.cdf[i] < zeta)
   {
     if(++i >= s.fn)
@@ -44,21 +41,13 @@ void sample(sampler_t s, float zeta, unsigned int *k, float *w)
     asm("trap;");
   }
 
-  *k = s.prm[i];   // Get the ONE-based index into the sparse function
+  // Get the ONE-based index into the sparse function (the element index)
+  *k = s.prm[i];   
   DPRINT("CDF gives permutation 0-index %i", *k);
 
-  // Loop over all entries in the sparse matrix, looking for the correct index
-  for(int j = 0; j < s.fn; j++)
-  {
-    // When the index has been located, check if the associated value is positive or
-    // negative, and assign accordingly
-    if(s.fnzind[j] == *k)
-    {
-      *w = s.fnzval[j] < 0.f ? -1.f : 1.f;
-      DPRINT("Found nonzero at 0-index %i, func value %f, weight %f", j, s.fnzval[j], *w);
-      break;
-    }
-  }
+  // Get the polarity of the function from compressed vector
+  *w = s.pol[i] > 0.f ? 1.f : -1.f;
+  DPRINT("Function polarity at 0-index %i is %i", *w);
 
   // Convert to zero based element index
   (*k)--;

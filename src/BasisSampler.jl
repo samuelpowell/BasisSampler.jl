@@ -17,7 +17,7 @@ end
 include("sampler.jl")
 
 if cudabuild 
-  include("cusupport.jl")
+  include("CUDA/cusupport.jl")
 end
 
 end # module
