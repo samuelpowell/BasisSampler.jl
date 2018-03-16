@@ -6,9 +6,9 @@ export CuSampler, CuSamplerStruct, custruct, cuptx, cuinc
 
 struct CuSamplerStruct
   fn::Cuint
-  cdf::Ptr{Cfloat}
-  pol::Ptr{Cuchar}
-  prm::Ptr{Cuint}
+  cdf::Ptr{Void}
+  pol::Ptr{Void}
+  prm::Ptr{Void}
 end
 
 struct CuSampler 
@@ -27,9 +27,7 @@ function CuSampler(s::Sampler)
   d_prm = CuArray(Vector{Cuint}(s.prm))
   
   # Dirty GPU pointer extraction and storage
-  d_struct = CuSamplerStruct(fn, pointer(pointer(d_cdf)),
-                                 pointer(pointer(d_pol)),
-                                 pointer(pointer(d_prm)))
+  d_struct = CuSamplerStruct(fn, d_cdf.buf.ptr, d_pol.buf.ptr, d_prm.buf.ptr)
   
   # Return structure of pointers
   return CuSampler(d_cdf, d_pol, d_prm, d_struct)

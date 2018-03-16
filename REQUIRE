@@ -1,1 +1,2 @@
 julia 0.6
+CUDAdrv 0.7.7
